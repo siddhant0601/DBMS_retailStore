@@ -1,0 +1,53 @@
+
+Index Analysis Report
+
+Objective: Optimize database query performance by implementing targeted indexing on high-volume tables (100,000+ entries), achieving 
+significant reduction in execution times for selective queries and enhancing overall data retrieval efficiency.
+
+Performance Evaluation and Observations:
+
+1. **Significant Improvement on Highly Filtered Queries**:
+   - Query: SELECT * FROM Product WHERE price = 500
+   - Execution Time:
+     - Without Index: 0.0476 seconds
+     - With Index: 0.0005 seconds (98.9% improvement)
+   - Analysis: Indexing allows MySQL to directly access relevant rows, effectively reducing the query time from 0.0476 seconds to 
+   0.0005 seconds. This enhancement is particularly beneficial in large tables, reducing the need for a full table scan.
+
+2. **No Added Benefit for Primary Key Lookups**:
+   - Query: SELECT * FROM Product WHERE pid = 90000
+   - Execution Time:
+     - Without Index: 0.0000 seconds
+     - With Index: 0.0000 seconds
+   - Analysis: Indexing on primary keys yielded no noticeable improvement, as MySQL naturally optimizes primary key queries. 
+
+3. **Moderate Filtering Yielding Significant Gains**:
+   - Query: SELECT * FROM Product WHERE quantity = 4000 or quantity = 5000
+   - Execution Time:
+     - Without Index: 0.0594 seconds
+     - With Index: 0.0010 seconds (98.3% improvement)
+   - Analysis: Indexes speed up queries with moderately selective filtering, especially when filtering on values with low 
+   occurrence, reducing query time considerably.
+
+4. **Commonly Filtered Columns Show Smaller Gains**:
+   - Query: SELECT * FROM deliveryboy WHERE rating = 5
+   - Execution Time:
+     - Without Index: 0.0020 seconds
+     - With Index: 0.0010 seconds (small improvement)
+   - Analysis: For frequently occurring values, indexing brings limited benefits. While beneficial, the gains are marginal as 
+   many rows still match the filtered criteria.
+
+5. **Range Query Results on Large Datasets**:
+   - Query: SELECT * FROM Product WHERE quantity > 10
+   - Execution Time:
+     - Without Index: 1.1768 seconds
+     - With Index: 1.1569 seconds (minor improvement)
+   - Analysis: Indexing shows minor gains on broad range queries since a large volume of data still satisfies the condition. 
+   Indexes are, therefore, more beneficial when significantly reducing scanned rows.
+
+Database Management Techniques:
+- Database population performed using Python scripts and Faker library.
+- Backup and cloning using command: `mysqldump -u root -p mybasket | mysql -u root -p mybasket_copy`.
+
+Conclusion: Selective indexing on large tables has proven effective, optimizing query performance in cases with high selectivity 
+and moderate filtering. The process is less impactful for primary key lookups and broader range queries.

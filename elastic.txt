@@ -1,0 +1,109 @@
+downlaod logstash replace the javaJdk path , move the logstash conf files to the actual logstash/conf
+go to logstash / bin and then run the command => logstash -f .\config\mybasket.conf --config.reload.automatic
+product.conf is dummy file to create a new variable (no use)
+mybasket.conf contains the logstash script to convert mysql database to Elasticsearch
+
+run the elastic and kibana 
+
+### Analysis of MySQL Queries and Corresponding Elasticsearch Queries
+
+The integration of Elasticsearch with MySQL in the "MyBasket" application has significantly improved query performance. Below are the MySQL queries along with their corresponding Elasticsearch queries and an analysis of performance gains.
+
+#### 1. Query to Find Customers with First Name "John"
+- **MySQL Query**:
+```sql
+SELECT * FROM customer WHERE fname = 'John';
+```
+- **Elasticsearch Query**:
+```json
+{
+  "query": {
+    "term": {
+      "fname.keyword": "John"
+    }
+  }
+}
+```
+- **Performance Analysis**:
+  - MySQL time: 0.0300 seconds
+  - Result Length (MySQL): 742
+  - Elasticsearch time: 0.0170 seconds
+  - Result Length (Elasticsearch): 742
+  - Improvement: **43.3% faster**
+
+#### 2. Query to Find Products Priced Between 100 and 500
+- **MySQL Query**:
+```sql
+SELECT * FROM product WHERE price BETWEEN 100 AND 500;
+```
+- **Elasticsearch Query**:
+```json
+{
+  "query": {
+    "range": {
+      "price": {
+        "gte": 100,
+        "lte": 500
+      }
+    }
+  }
+}
+```
+- **Performance Analysis**:
+  - MySQL time: 0.0535 seconds
+  - Result Length (MySQL): 1332
+  - Elasticsearch time: 0.0030 seconds
+  - Result Length (Elasticsearch): 1332
+  - Improvement: **94.4% faster**
+
+#### 3. Query to Find Products with Quantity Between 10,000 and 13,000
+- **MySQL Query**:
+```sql
+SELECT * FROM product WHERE quantity BETWEEN 10000 AND 13000;
+```
+- **Elasticsearch Query**:
+```json
+{
+  "query": {
+    "range": {
+      "quantity": {
+        "gte": 10000,
+        "lte": 13000
+      }
+    }
+  }
+}
+```
+- **Performance Analysis**:
+  - MySQL time: 0.0814 seconds
+  - Result Length (MySQL): 6847
+  - Elasticsearch time: 0.0031 seconds
+  - Result Length (Elasticsearch): 6847
+  - Improvement: **96.2% faster**
+
+#### 4. Query to Find Products with Exact Quantity of 14,842
+- **MySQL Query**:
+```sql
+SELECT * FROM product WHERE quantity = 14842;
+```
+- **Elasticsearch Query**:
+```json
+{
+  "query": {
+    "term": {
+      "quantity": {
+        "value": 14842
+      }
+    }
+  }
+}
+```
+- **Performance Analysis**:
+  - MySQL time: 0.0400 seconds
+  - Result Length (MySQL): 4
+  - Elasticsearch time: 0.0030 seconds
+  - Result Length (Elasticsearch): 4
+  - Improvement: **92.5% faster**
+
+### Summary
+The integration of Elasticsearch reduced query time significantly across all tested queries, with improvements ranging from 43.3% to 96.2%. This demonstrates Elasticsearch’s strength in handling full-text and range queries efficiently, especially when dealing with high cardinality fields.
